@@ -3,6 +3,7 @@ package com.example.buyme.ui.screens
 import android.content.Intent
 import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -11,10 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -48,7 +46,6 @@ private data class ExportPayload(val version: Int = 1, val categories: List<Expo
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryOverviewScreen() {
-    // RTL UI (Arabic)
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Rtl) {
         val categoryDao = remember { Graph.db.categoryDao() }
         val itemDao = remember { Graph.db.itemDao() }
@@ -59,6 +56,8 @@ fun CategoryOverviewScreen() {
         val categories by categoryDao.observeCategories().collectAsState(initial = emptyList())
         var newCategory by remember { mutableStateOf(TextFieldValue("")) }
         var showConfirmAll by remember { mutableStateOf(false) }
+
+        val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
         // Share checked items
         fun shareChecked() {
@@ -85,7 +84,7 @@ fun CategoryOverviewScreen() {
             }
         }
 
-        // -------- Export / Import --------
+        // Export / Import
         suspend fun exportToUri(uri: Uri) = withContext(Dispatchers.IO) {
             val cats = categoryDao.listCategories()
             val payload = ExportPayload(
@@ -111,7 +110,6 @@ fun CategoryOverviewScreen() {
             val payload = gson.fromJson(json, ExportPayload::class.java)
                 ?: throw IllegalArgumentException("صيغة الملف غير صحيحة")
 
-            // Replace current data (suspend transaction)
             Graph.db.withTransaction {
                 Graph.db.clearAllTables()
                 payload.categories.forEach { c ->
@@ -153,55 +151,123 @@ fun CategoryOverviewScreen() {
             }
         }
 
-        Scaffold(
-            // Custom header: title first line, actions second line
-            topBar = {
-                AppHeader(
-                    onShare = { shareChecked() },
-                    onImport = { openDocLauncher.launch(arrayOf("application/json", "text/*")) },
-                    onExport = { createDocLauncher.launch("buyme_export.json") },
-                    onUncheckAll = { showConfirmAll = true }
-                )
+        // Drawer + BackHandler
+        ModalNavigationDrawer(
+            drawerState = drawerState,
+            drawerContent = {
+                ModalDrawerSheet(
+                    modifier = Modifier.width(280.dp) // ~1/3 screen
+                ) {
+                    Text(
+                        text = "BuyMe — القوائم والعناصر",
+                        style = MaterialTheme.typography.titleLarge,
+                        modifier = Modifier.padding(16.dp)
+                    )
+                    Divider()
+
+                    NavigationDrawerItem(
+                        label = { Text("إلغاء تحديد الكل") },
+                        selected = false,
+                        onClick = {
+                            showConfirmAll = true
+                            scope.launch { drawerState.close() }
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("استيراد") },
+                        selected = false,
+                        onClick = {
+                            openDocLauncher.launch(arrayOf("application/json", "text/*"))
+                            scope.launch { drawerState.close() }
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("تصدير") },
+                        selected = false,
+                        onClick = {
+                            createDocLauncher.launch("buyme_export.json")
+                            scope.launch { drawerState.close() }
+                        }
+                    )
+                    NavigationDrawerItem(
+                        label = { Text("مشاركة") },
+                        selected = false,
+                        onClick = {
+                            shareChecked()
+                            scope.launch { drawerState.close() }
+                        },
+                        icon = { Icon(Icons.Default.Share, contentDescription = null) }
+                    )
+                }
             }
-        ) { padding ->
-            if (showConfirmAll) {
-                AlertDialog(
-                    onDismissRequest = { showConfirmAll = false },
-                    title = { Text("تأكيد") },
-                    text = { Text("هل أنت متأكد أنك تريد إلغاء تحديد كل العناصر؟") },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            showConfirmAll = false
-                            scope.launch {
-                                itemDao.uncheckAllGlobal()
-                                Toast.makeText(context, "تم إلغاء تحديد جميع العناصر", Toast.LENGTH_SHORT).show()
-                            }
-                        }) { Text("نعم") }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = { showConfirmAll = false }) { Text("إلغاء") }
-                    }
-                )
+        ) {
+            // Handle back press when drawer open
+            BackHandler(enabled = drawerState.isOpen) {
+                scope.launch { drawerState.close() }
             }
 
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-                    .padding(16.dp)
-                    .fillMaxSize()
-            ) {
-                // Add category
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    OutlinedTextField(
-                        value = newCategory,
-                        onValueChange = { newCategory = it },
-                        modifier = Modifier.weight(1f),
-                        singleLine = true,
-                        label = { Text("فئة جديدة") },
-                        placeholder = { Text("مثلاً: فواكه") },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
+            Scaffold(
+                topBar = {
+                    SmallTopAppBar(
+                        title = { Text("BuyMe — القوائم والعناصر") },
+                        navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Default.Menu, contentDescription = "Menu")
+                            }
+                        }
+                    )
+                }
+            ) { padding ->
+                if (showConfirmAll) {
+                    AlertDialog(
+                        onDismissRequest = { showConfirmAll = false },
+                        title = { Text("تأكيد") },
+                        text = { Text("هل أنت متأكد أنك تريد إلغاء تحديد كل العناصر؟") },
+                        confirmButton = {
+                            TextButton(onClick = {
+                                showConfirmAll = false
+                                scope.launch {
+                                    itemDao.uncheckAllGlobal()
+                                    Toast.makeText(context, "تم إلغاء تحديد جميع العناصر", Toast.LENGTH_SHORT).show()
+                                }
+                            }) { Text("نعم") }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showConfirmAll = false }) { Text("إلغاء") }
+                        }
+                    )
+                }
+
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(padding)
+                        .padding(16.dp)
+                        .fillMaxSize(),
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    item {
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            OutlinedTextField(
+                                value = newCategory,
+                                onValueChange = { newCategory = it },
+                                modifier = Modifier.weight(1f),
+                                singleLine = true,
+                                label = { Text("فئة جديدة") },
+                                placeholder = { Text("مثلاً: فواكه") },
+                                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                                keyboardActions = KeyboardActions(
+                                    onDone = {
+                                        val t = newCategory.text.trim()
+                                        if (t.isNotEmpty()) {
+                                            scope.launch {
+                                                categoryDao.insert(CategoryEntity(name = t))
+                                                newCategory = TextFieldValue("")
+                                            }
+                                        }
+                                    }
+                                )
+                            )
+                            Button(onClick = {
                                 val t = newCategory.text.trim()
                                 if (t.isNotEmpty()) {
                                     scope.launch {
@@ -209,26 +275,11 @@ fun CategoryOverviewScreen() {
                                         newCategory = TextFieldValue("")
                                     }
                                 }
-                            }
-                        )
-                    )
-                    Button(onClick = {
-                        val t = newCategory.text.trim()
-                        if (t.isNotEmpty()) {
-                            scope.launch {
-                                categoryDao.insert(CategoryEntity(name = t))
-                                newCategory = TextFieldValue("")
-                            }
+                            }) { Text("إضافة") }
                         }
-                    }) { Text("إضافة") }
-                }
+                        Spacer(Modifier.height(16.dp))
+                    }
 
-                Spacer(Modifier.height(16.dp))
-
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
                     items(categories, key = { it.id }) { cat ->
                         CategoryCard(
                             category = cat,
@@ -255,46 +306,6 @@ fun CategoryOverviewScreen() {
 }
 
 @Composable
-private fun AppHeader(
-    onShare: () -> Unit,
-    onImport: () -> Unit,
-    onExport: () -> Unit,
-    onUncheckAll: () -> Unit
-) {
-    // Title on its own line; actions below.
-    Surface(shadowElevation = 4.dp, tonalElevation = 2.dp) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 16.dp, vertical = 10.dp)
-        ) {
-            Text(
-                text = "BuyMe — القوائم والعناصر",
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(Modifier.height(8.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                TextButton(onClick = onUncheckAll) { Text("إلغاء تحديد الكل") }
-                OutlinedButton(onClick = onImport) { Text("استيراد") }
-                OutlinedButton(onClick = onExport) { Text("تصدير") }
-                // Simple share icon button
-                IconButton(onClick = onShare) {
-                    Icon(
-                        imageVector = Icons.Filled.Share,
-                        contentDescription = "مشاركة"
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
 private fun CategoryCard(
     category: CategoryEntity,
     onDeleteCategory: () -> Unit,
@@ -308,8 +319,9 @@ private fun CategoryCard(
     var showMenu by remember { mutableStateOf(false) }
     var isAdding by remember { mutableStateOf(false) }
     var newItem by remember { mutableStateOf(TextFieldValue("")) }
+    var collapsed by remember { mutableStateOf(false) }   // <<< NEW state for hide/show
 
-    val focusRequester = remember { FocusRequester() }
+    val focusRequester = FocusRequester()
     val keyboard = LocalSoftwareKeyboardController.current
     var hadFocus by remember { mutableStateOf(false) }
 
@@ -323,85 +335,110 @@ private fun CategoryCard(
 
     ElevatedCard(Modifier.fillMaxWidth()) {
         Column(Modifier.padding(12.dp)) {
-            // Category header + actions
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(text = category.name, style = MaterialTheme.typography.titleMedium, color = Color.Red)
+                // Collapse/Expand button
+                IconButton(onClick = { collapsed = !collapsed }) {
+                    if (collapsed) {
+                        Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Show")
+                    } else {
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Hide")
+                    }
+                }
+
+                Text(
+                    text = category.name,
+                    style = MaterialTheme.typography.titleMedium,
+                    color = Color.Red,
+                    modifier = Modifier.weight(1f)
+                )
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     IconButton(onClick = {
                         isAdding = !isAdding
                         if (isAdding) { newItem = TextFieldValue(""); hadFocus = false }
                     }) { Icon(Icons.Default.Add, contentDescription = "إضافة عنصر") }
-                    IconButton(onClick = { showMenu = true }) { Icon(Icons.Default.MoreVert, contentDescription = "القائمة") }
+
+                    IconButton(onClick = { showMenu = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "القائمة")
+                    }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
-                        DropdownMenuItem(text = { Text("إلغاء تحديد عناصر هذه الفئة") }, onClick = { showMenu = false; onUncheckAll() })
-                        DropdownMenuItem(text = { Text("حذف الفئة") }, onClick = { showMenu = false; onDeleteCategory() })
+                        DropdownMenuItem(
+                            text = { Text("إلغاء تحديد عناصر هذه الفئة") },
+                            onClick = { showMenu = false; onUncheckAll() }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("حذف الفئة") },
+                            onClick = { showMenu = false; onDeleteCategory() }
+                        )
                     }
                 }
             }
 
-            // Inline add item
-            if (isAdding) {
-                Spacer(Modifier.height(8.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    OutlinedTextField(
-                        value = newItem,
-                        onValueChange = { newItem = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .focusRequester(focusRequester)
-                            .onFocusChanged { state ->
-                                if (state.isFocused) hadFocus = true
-                                if (hadFocus && !state.hasFocus && newItem.text.isBlank()) {
-                                    isAdding = false
+            // Only show contents when not collapsed
+            if (!collapsed) {
+                if (isAdding) {
+                    Spacer(Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = newItem,
+                            onValueChange = { newItem = it },
+                            modifier = Modifier
+                                .weight(1f)
+                                .focusRequester(focusRequester)
+                                .onFocusChanged { state ->
+                                    if (state.isFocused) hadFocus = true
+                                    if (hadFocus && !state.hasFocus && newItem.text.isBlank()) {
+                                        isAdding = false
+                                    }
+                                },
+                            singleLine = true,
+                            label = { Text("عنصر جديد") },
+                            placeholder = { Text("مثلاً: تفاح") },
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                            keyboardActions = KeyboardActions(
+                                onDone = {
+                                    val t = newItem.text.trim()
+                                    if (t.isNotEmpty()) {
+                                        onAddItem(t)
+                                        newItem = TextFieldValue("")
+                                        isAdding = false
+                                    }
                                 }
-                            },
-                        singleLine = true,
-                        label = { Text("عنصر جديد") },
-                        placeholder = { Text("مثلاً: تفاح") },
-                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                        keyboardActions = KeyboardActions(
-                            onDone = {
-                                val t = newItem.text.trim()
-                                if (t.isNotEmpty()) {
-                                    onAddItem(t)
-                                    newItem = TextFieldValue("")
-                                    isAdding = false
-                                }
-                            }
+                            )
                         )
-                    )
-                    Button(onClick = {
-                        val t = newItem.text.trim()
-                        if (t.isNotEmpty()) {
-                            onAddItem(t)
-                            newItem = TextFieldValue("")
-                            isAdding = false
-                        }
-                    }) { Text("إضافة") }
+                        Button(onClick = {
+                            val t = newItem.text.trim()
+                            if (t.isNotEmpty()) {
+                                onAddItem(t)
+                                newItem = TextFieldValue("")
+                                isAdding = false
+                            }
+                        }) { Text("إضافة") }
+                    }
                 }
-            }
 
-            // Items — checkbox left, text right (aligned)
-            Spacer(Modifier.height(8.dp))
-            items.forEach { itx ->
-                ItemRow(
-                    item = itx,
-                    onToggle = { scope.launch { itemDao.update(itx.copy(checked = !itx.checked)) } },
-                    onDelete = { scope.launch { itemDao.delete(itx) } }
-                )
-                Spacer(Modifier.height(6.dp))
+                Spacer(Modifier.height(8.dp))
+                items.forEach { itx ->
+                    ItemRow(
+                        item = itx,
+                        onToggle = { scope.launch { itemDao.update(itx.copy(checked = !itx.checked)) } },
+                        onDelete = { scope.launch { itemDao.delete(itx) } }
+                    )
+                    Spacer(Modifier.height(6.dp))
+                }
             }
         }
     }
 }
+
 
 @Composable
 private fun ItemRow(
@@ -409,7 +446,6 @@ private fun ItemRow(
     onToggle: () -> Unit,
     onDelete: () -> Unit
 ) {
-    // Force LTR inside the row so checkbox is left and text is right
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
         Surface(tonalElevation = if (item.checked) 2.dp else 0.dp, shape = MaterialTheme.shapes.medium) {
             Row(

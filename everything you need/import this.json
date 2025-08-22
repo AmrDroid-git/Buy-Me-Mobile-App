@@ -1,0 +1,270 @@
+{
+  "categories": [
+    {
+      "name": "بروتينات",
+      "items": [
+        { "name": "بيض 🥚", "checked": false },
+        { "name": "حليب 🥛", "checked": false },
+        { "name": "سمك 🐟", "checked": false },
+        { "name": "سردين 🐟", "checked": false },
+        { "name": "تونة 🐠", "checked": false },
+        { "name": "لحم بقري 🥩", "checked": false },
+        { "name": "لحم مفروم", "checked": false },
+        { "name": "ستيك", "checked": false },
+        { "name": "كفتة", "checked": false },
+        { "name": "لحم غنم 🍖", "checked": false },
+        { "name": "كبدة", "checked": false },
+        { "name": "دجاج 🍗", "checked": false },
+        { "name": "ديك رومي 🦃", "checked": false },
+        { "name": "نقانق 🌭", "checked": false },
+        { "name": "مرتديلا", "checked": false },
+        { "name": "سلامي", "checked": false },
+        { "name": "جمبري 🍤", "checked": false },
+        { "name": "محار 🦪", "checked": false },
+        { "name": "جبن 🧀", "checked": false },
+        { "name": "لبنة", "checked": false },
+        { "name": "قشطة", "checked": false },
+        { "name": "يوغورت", "checked": false }
+      ]
+    },
+    {
+      "name": "خضر",
+      "items": [
+        { "name": "طماطم 🍅", "checked": false },
+        { "name": "بصل 🧅", "checked": false },
+        { "name": "بصل أخضر", "checked": false },
+        { "name": "ثوم 🧄", "checked": false },
+        { "name": "بطاطا 🥔", "checked": false },
+        { "name": "جزر 🥕", "checked": false },
+        { "name": "خيار 🥒", "checked": false },
+        { "name": "باذنجان", "checked": false },
+        { "name": "قرع 🎃", "checked": false },
+        { "name": "فلفل 🌶️", "checked": false },
+        { "name": "فلفل أخضر 🫑", "checked": false },
+        { "name": "بروكلي 🥦", "checked": false },
+        { "name": "قرنبيط", "checked": false },
+        { "name": "كوسة", "checked": false },
+        { "name": "خس 🥬", "checked": false },
+        { "name": "ملفوف", "checked": false },
+        { "name": "نعناع 🌿", "checked": false },
+        { "name": "بقدونس", "checked": false },
+        { "name": "كرافس", "checked": false },
+        { "name": "سبانخ", "checked": false },
+        { "name": "خرشوف", "checked": false },
+        { "name": "فجل", "checked": false },
+        { "name": "جلبانة 🫛", "checked": false },
+        { "name": "ذرة 🌽", "checked": false },
+        { "name": "ملوخية", "checked": false }
+      ]
+    },
+    {
+      "name": "فاكهة",
+      "items": [
+        { "name": "تفاح 🍎", "checked": false },
+        { "name": "موز 🍌", "checked": false },
+        { "name": "برتقال 🍊", "checked": false },
+        { "name": "ليمون 🍋", "checked": false },
+        { "name": "رمان", "checked": false },
+        { "name": "عنب 🍇", "checked": false },
+        { "name": "فراولة 🍓", "checked": false },
+        { "name": "كرز 🍒", "checked": false },
+        { "name": "مانجو 🥭", "checked": false },
+        { "name": "كيوي 🥝", "checked": false },
+        { "name": "مشماش 🍑", "checked": false },
+        { "name": "خوخ", "checked": false },
+        { "name": "تين", "checked": false },
+        { "name": "إجاص 🍐", "checked": false },
+        { "name": "بطيخ 🍉", "checked": false },
+        { "name": "دلاع 🍉", "checked": false },
+        { "name": "بابايا", "checked": false },
+        { "name": "أناناس 🍍", "checked": false },
+        { "name": "تمر", "checked": false },
+        { "name": "زبيب", "checked": false },
+        { "name": "جوز الهند 🥥", "checked": false }
+      ]
+    },
+    {
+      "name": "مخبوزات وفطور",
+      "items": [
+        { "name": "خبز 🍞", "checked": false },
+        { "name": "باغيت 🥖", "checked": false },
+        { "name": "كرواسون 🥐", "checked": false },
+        { "name": "بسكويت 🍪", "checked": false },
+        { "name": "مربى", "checked": false },
+        { "name": "عسل 🍯", "checked": false },
+        { "name": "زبدة 🧈", "checked": false },
+        { "name": "قهوة ☕", "checked": false },
+        { "name": "شاي 🍵", "checked": false },
+        { "name": "حليب بالشوكولا 🥛🍫", "checked": false }
+      ]
+    },
+    {
+      "name": "سكريات وحلويات",
+      "items": [
+        { "name": "شوكولا 🍫", "checked": false },
+        { "name": "دونات 🍩", "checked": false },
+        { "name": "كيك 🍰", "checked": false },
+        { "name": "بوظة 🍨", "checked": false },
+        { "name": "آيس كريم 🍦", "checked": false },
+        { "name": "حلويات عربية", "checked": false },
+        { "name": "بسبوسة", "checked": false },
+        { "name": "بقلاوة", "checked": false },
+        { "name": "كعك", "checked": false },
+        { "name": "غزل البنات 🍭", "checked": false }
+      ]
+    },
+    {
+      "name": "مشروبات",
+      "items": [
+        { "name": "ماء 💧", "checked": false },
+        { "name": "مياه غازية", "checked": false },
+        { "name": "مشروبات غازية 🥤", "checked": false },
+        { "name": "عصائر 🍹", "checked": false },
+        { "name": "ريد بول ⚡", "checked": false },
+        { "name": "مشروبات طاقة", "checked": false },
+        { "name": "شاي مثلج 🧊", "checked": false },
+        { "name": "قهوة مثلجة 🧊☕", "checked": false },
+        { "name": "حليب 🥛", "checked": false }
+      ]
+    },
+    {
+      "name": "مطبخ",
+      "items": [
+        { "name": "أرز 🍚", "checked": false },
+        { "name": "كسكسي", "checked": false },
+        { "name": "مقرونة 🍝", "checked": false },
+        { "name": "طحين", "checked": false },
+        { "name": "زيت زيتون 🫒", "checked": false },
+        { "name": "زيت نباتي 🛢️", "checked": false },
+        { "name": "سكر", "checked": false },
+        { "name": "ملح 🧂", "checked": false },
+        { "name": "خل", "checked": false },
+        { "name": "هريسة 🌶️", "checked": false },
+        { "name": "كيتشوب", "checked": false },
+        { "name": "مايونيز", "checked": false },
+        { "name": "خردل", "checked": false },
+        { "name": "بهارات", "checked": false }
+      ]
+    },
+    {
+      "name": "معلبات",
+      "items": [
+        { "name": "طماطم معلبة", "checked": false },
+        { "name": "فول معلب", "checked": false },
+        { "name": "حمص معلب", "checked": false },
+        { "name": "بازلاء", "checked": false },
+        { "name": "ذرة 🌽", "checked": false },
+        { "name": "مربى", "checked": false },
+        { "name": "تونة 🐟", "checked": false },
+        { "name": "سردين", "checked": false }
+      ]
+    },
+    {
+      "name": "تجميد",
+      "items": [
+        { "name": "بيتزا 🍕", "checked": false },
+        { "name": "خضار مجمدة", "checked": false },
+        { "name": "بطاطا مجمدة 🍟", "checked": false },
+        { "name": "دجاج مجمد", "checked": false },
+        { "name": "سمك مجمد", "checked": false },
+        { "name": "آيس كريم 🍦", "checked": false }
+      ]
+    },
+    {
+      "name": "مواد تنظيف",
+      "items": [
+        { "name": "مسحوق غسيل 🧺", "checked": false },
+        { "name": "صابون 🧼", "checked": false },
+        { "name": "شامبو 🧴", "checked": false },
+        { "name": "بلسم", "checked": false },
+        { "name": "معجون أسنان 🪥", "checked": false },
+        { "name": "فرشاة أسنان 🪥", "checked": false },
+        { "name": "غسول فم", "checked": false },
+        { "name": "مناديل ورقية 🧻", "checked": false },
+        { "name": "مطهر أرضيات 🧽", "checked": false },
+        { "name": "مزيل عرق", "checked": false },
+        { "name": "معطر جو", "checked": false },
+        { "name": "منظف زجاج", "checked": false },
+        { "name": "منظف مطبخ", "checked": false },
+        { "name": "كلور", "checked": false }
+      ]
+    },
+    {
+      "name": "أطفال",
+      "items": [
+        { "name": "حفاظات 👶", "checked": false },
+        { "name": "مناديل أطفال", "checked": false },
+        { "name": "حليب أطفال 🍼", "checked": false },
+        { "name": "بودرة أطفال", "checked": false },
+        { "name": "ملابس أطفال", "checked": false },
+        { "name": "لهاية", "checked": false },
+        { "name": "ألعاب أطفال 🧸", "checked": false }
+      ]
+    },
+    {
+      "name": "تجميل",
+      "items": [
+        { "name": "أحمر شفاه 💄", "checked": false },
+        { "name": "ماسكارا", "checked": false },
+        { "name": "كريم أساس", "checked": false },
+        { "name": "بودرة وجه", "checked": false },
+        { "name": "ماسك للوجه 🧖", "checked": false },
+        { "name": "مزيل مكياج", "checked": false },
+        { "name": "عطر 💐", "checked": false },
+        { "name": "مناكير 💅", "checked": false }
+      ]
+    },
+    {
+      "name": "أدوات منزلية",
+      "items": [
+        { "name": "ملاعق 🍴", "checked": false },
+        { "name": "شوك", "checked": false },
+        { "name": "سكاكين", "checked": false },
+        { "name": "كؤوس 🥛", "checked": false },
+        { "name": "صحون 🍽️", "checked": false },
+        { "name": "طناجر", "checked": false },
+        { "name": "مقلاة 🍳", "checked": false },
+        { "name": "أكواب شاي", "checked": false },
+        { "name": "قوارير ماء", "checked": false },
+        { "name": "أكياس قمامة 🗑️", "checked": false },
+        { "name": "بلاستيك تغليف", "checked": false }
+      ]
+    },
+    {
+      "name": "صيدلية منزلية",
+      "items": [
+        { "name": "مسكن ألم 💊", "checked": false },
+        { "name": "فيتامينات", "checked": false },
+        { "name": "ضمادات 🩹", "checked": false },
+        { "name": "معقم كحول", "checked": false },
+        { "name": "ميزان حرارة 🌡️", "checked": false },
+        { "name": "مرهم", "checked": false },
+        { "name": "قطرات أنف", "checked": false }
+      ]
+    },
+    {
+      "name": "إلكترونيات صغيرة",
+      "items": [
+        { "name": "شاحن 🔌", "checked": false },
+        { "name": "سماعات 🎧", "checked": false },
+        { "name": "بطاريات 🔋", "checked": false },
+        { "name": "لمبة 💡", "checked": false },
+        { "name": "مروحة", "checked": false },
+        { "name": "كابل USB", "checked": false }
+      ]
+    },
+    {
+      "name": "ملابس",
+      "items": [
+        { "name": "قميص 👕", "checked": false },
+        { "name": "بنطال 👖", "checked": false },
+        { "name": "حذاء 👟", "checked": false },
+        { "name": "جاكيت 🧥", "checked": false },
+        { "name": "جوارب 🧦", "checked": false },
+        { "name": "قبعة 🧢", "checked": false },
+        { "name": "حزام", "checked": false }
+      ]
+    }
+  ],
+  "version": 1
+}
