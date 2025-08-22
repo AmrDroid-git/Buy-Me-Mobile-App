@@ -59,6 +59,10 @@ fun CategoryOverviewScreen() {
 
         val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
 
+        // --- collapse state map ---
+        val collapsedMap = remember { mutableStateMapOf<Int, Boolean>() }
+        categories.forEach { if (!collapsedMap.containsKey(it.id)) collapsedMap[it.id] = false }
+
         // Share checked items
         fun shareChecked() {
             scope.launch {
@@ -201,7 +205,6 @@ fun CategoryOverviewScreen() {
                 }
             }
         ) {
-            // Handle back press when drawer open
             BackHandler(enabled = drawerState.isOpen) {
                 scope.launch { drawerState.close() }
             }
@@ -283,6 +286,8 @@ fun CategoryOverviewScreen() {
                     items(categories, key = { it.id }) { cat ->
                         CategoryCard(
                             category = cat,
+                            collapsed = collapsedMap[cat.id] ?: false,
+                            onToggleCollapse = { collapsedMap[cat.id] = !(collapsedMap[cat.id] ?: false) },
                             onDeleteCategory = { scope.launch { categoryDao.delete(cat) } },
                             onUncheckAll = { scope.launch { itemDao.uncheckAll(cat.id) } },
                             onAddItem = { itemName ->
@@ -308,6 +313,8 @@ fun CategoryOverviewScreen() {
 @Composable
 private fun CategoryCard(
     category: CategoryEntity,
+    collapsed: Boolean,
+    onToggleCollapse: () -> Unit,
     onDeleteCategory: () -> Unit,
     onUncheckAll: () -> Unit,
     onAddItem: (String) -> Unit
@@ -319,7 +326,6 @@ private fun CategoryCard(
     var showMenu by remember { mutableStateOf(false) }
     var isAdding by remember { mutableStateOf(false) }
     var newItem by remember { mutableStateOf(TextFieldValue("")) }
-    var collapsed by remember { mutableStateOf(false) }   // <<< NEW state for hide/show
 
     val focusRequester = FocusRequester()
     val keyboard = LocalSoftwareKeyboardController.current
@@ -340,8 +346,7 @@ private fun CategoryCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Collapse/Expand button
-                IconButton(onClick = { collapsed = !collapsed }) {
+                IconButton(onClick = { onToggleCollapse() }) {
                     if (collapsed) {
                         Icon(Icons.Default.KeyboardArrowRight, contentDescription = "Show")
                     } else {
@@ -378,7 +383,6 @@ private fun CategoryCard(
                 }
             }
 
-            // Only show contents when not collapsed
             if (!collapsed) {
                 if (isAdding) {
                     Spacer(Modifier.height(8.dp))
@@ -438,7 +442,6 @@ private fun CategoryCard(
         }
     }
 }
-
 
 @Composable
 private fun ItemRow(
